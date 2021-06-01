@@ -3,7 +3,7 @@
 The file contains the instructions for specifying a customised training pipeline.
 
 Each file is organised as follows:
-```JSON
+```
 {
     "tag": "Name of the run",
     "experiment_configs": [
@@ -34,21 +34,23 @@ At the root level, the file is a JSON object, containing two items:
 
 ## Experiment Configuration
 
-Within the `experiment_configs` list, each item is a JSON object which specifies different settings/hyperparameters of each step in the overall training pipeline. 
+Within the `experiment_configs` list, each item is a JSON object which specifies different settings/hyperparameters of each step in the overall training pipeline.
 
 ### Experiment Type
+![Extended Architecture](../imgs/extended_architecture.png "Extended Architecture")
+
 The most important item is the `type` which specifies the type of the experiment step, such as whether to train a model or to fine-tune a model. The following table explains supported values and their correponsind setting.
 
 | Value | Setting |
 | --- | --- |
 | `"none"` (default) | Does not perform anything. This can be used for loading a pre-trained model from path (see items `trained_model_path` and `previous_config_offset`.) |
 | `"eval_har"` | Loads the model from the previous step and evaluates it directly on the testing set |
-| `"transform_train"` | Trains the core of the previous mmodel/a new model using the task of transformation discrimination on the unlabelled dataset. |
+| `"transform_train"` | Trains the core of the previous mmodel/a new model using the task of transformation discrimination on the unlabelled dataset. (corresponding to step 0) |
 | `"har_full_train"` | Trains (without freezing any layers) the entire HAR model (from the previous step/from anew) on the training set of the labelled dataset. |
-| `"har_full_fine_tune"` | Fine-tunes (with freezing earlier layers) the HAR model (from the previous step/from anew) on the training set of the labelled dataset.  |
+| `"har_full_fine_tune"` | Fine-tunes (with freezing earlier layers) the HAR model (from the previous step/from anew) on the training set of the labelled dataset. (corresponding to step 1)  |
 | `"har_linear_train"` | Trains a linear classification model which incorporates the core model from the previous step by freezing all layers in the model except for a newly appended linear layer. |
-| `"self_training"` | Performs self-training on a new model, by using the model from the previous step as a teacher. |
-| `"self_har"` | Performs SelfHAR training (combined self-supervsised training and self-training) on a new model, by using the model from the previous step as a teacher. |
+| `"self_training"` | Performs self-training on a new model, by using the model from the previous step as a teacher. (corresponding to step 2, 4) |
+| `"self_har"` | Performs SelfHAR training (combined self-supervsised training and self-training) on a new model, by using the model from the previous step as a teacher. (corresponding to step 2, 3, 4) |
 
 ### Other Items
 
