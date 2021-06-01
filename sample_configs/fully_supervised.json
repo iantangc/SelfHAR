@@ -1,0 +1,25 @@
+{
+    "tag": "Fully_Supervised",
+    "experiment_configs": [
+        {
+            "type": "har_full_train",
+            "tag": "Training",
+            "previous_config_offset": 0,
+            "optimizer": "adam",
+            "initial_learning_rate": 0.0003,
+            "epochs": 30,
+            "batch_size": 300,
+            "eval_har": true
+        },
+        {
+            "type": "har_linear_train",
+            "tag": "Linear_Eval",
+            "previous_config_offset": 1,
+            "optimizer": "adam",
+            "initial_learning_rate": 0.0003,
+            "epochs": 30,
+            "batch_size": 300,
+            "eval_har": true
+        }
+    ]
+}

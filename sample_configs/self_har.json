@@ -1,0 +1,46 @@
+{  
+    "tag": "Self_HAR",
+    "experiment_configs": [
+        {
+            "type": "har_full_train",
+            "tag": "Teacher_Train",
+            "previous_config_offset": 0,
+            "optimizer": "adam",
+            "initial_learning_rate": 0.0003,
+            "epochs": 30,
+            "batch_size": 300
+        },
+        {
+            "type": "self_har",
+            "tag": "Self_HAR_Pre_Train",
+            "previous_config_offset": 1,
+            "optimizer": "adam",
+            "initial_learning_rate": 0.0003,
+            "epochs": 30,
+            "batch_size": 300,
+            "self_training_samples_per_class": 10000,
+            "self_training_minimum_confidence": 0.5,
+            "self_training_plurality_only": true
+        },
+        {
+            "type": "har_full_fine_tune",
+            "tag": "Student_Fine_Tune",
+            "previous_config_offset": 1,
+            "optimizer": "adam",
+            "initial_learning_rate": 0.0003,
+            "epochs": 30,
+            "batch_size": 300,
+            "eval_har": true
+        },
+        {
+            "type": "har_linear_train",
+            "tag": "Student_Linear_Eval",
+            "previous_config_offset": 2,
+            "optimizer": "adam",
+            "initial_learning_rate": 0.0003,
+            "epochs": 30,
+            "batch_size": 300,
+            "eval_har": true
+        }
+    ]
+}
