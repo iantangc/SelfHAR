@@ -1,5 +1,7 @@
 # SelfHAR - Improving Human Activity Recognition through Self-training with Unlabeled Data
 
+![SelfHAR Overview](./imgs/architecture_overview.png "SelfHAR Overview")
+
 Machine learning and deep learning have shown great promise in mobile sensing applications, including Human Activity Recognition. However, the performance of such models in real-world settings largely depends on the availability of large datasets that captures diverse behaviors. Recently, studies in computer vision and natural language processing have shown that leveraging massive amounts of unlabeled data enables performance on par with state-of-the-art supervised models.
 
 In this work, we present SelfHAR, a semi-supervised model that effectively learns to leverage unlabeled mobile sensing datasets to complement small labeled datasets. Our approach combines teacher-student self-training, which distills the knowledge of unlabeled and labeled datasets while allowing for data augmentation, and multi-task self-supervision, which learns robust signal-level representations by predicting distorted versions of the input.
@@ -12,6 +14,7 @@ This repository complements our paper, providing a reference implementation of t
 
 If you find our paper useful, please consider citing our work:
 
+DOI: https://doi.org/10.1145/3448112
 ```
 @article{tang2021selfhar,
   title={SelfHAR: Improving Human Activity Recognition through Self-training with Unlabeled Data},
@@ -39,6 +42,8 @@ The main entry points of the repository are `run_self_har.py` and `run_datasets.
 `run_self_har.py` implements the training, fine-tuning and evaluation of HAR models following the SelfHAR and related pipelines. The training pipeline is controlled using a JSON configuration file passed via command line argument `--config`. Sample configuration files are included in the [sample_configs](./sample_configs/) folder, which include configurations for the SelfHAR, Transformation Discrimination Only, Self-Training Only and Fully-supervised pipelines. Please refer to the [README.md](./sample_configs/README.md) in the folder for creating a customised training pipeline.
 
 ## Demo: Training a model for MotionSense following the SelfHAR pipeline
+![SelfHAR Architecture](./imgs/architecture_self_har.png "SelfHAR Architecture")
+
 Please run the following commands to:
 1. Download the [MotionSense](https://github.com/mmalekzadeh/motion-sense) dataset and the [HHAR](http://archive.ics.uci.edu/ml/datasets/heterogeneity+activity+recognition) dataset, and
 2. Train a HAR model following the SelfHAR pipeline, using HHAR as the unlabelled dataset, and fine-tuned and trained on the MotionSense dataset.
@@ -49,6 +54,8 @@ python run_self_har.py --working_directory test_run --config sample_configs/self
 ```
 
 # Results
+![Low-Data Results](./imgs/low_data_results.png "Low-Data Results")
+![Baseline Results](./imgs/baseline_comparison.png "Baseline Results")
 
 We evaluated SelfHAR on various HAR datasets and showed state-of-the-art performance over supervised and previous semi-supervised approaches, with up to 12% increase in F1 score using the same number of model parameters at inference. Furthermore, SelfHAR is data-efficient, reaching similar performance using up to 10 times less labeled data compared to supervised approaches. Our work not only achieves state-of-the-art performance in a diverse set of HAR datasets, but also sheds light on how pre-training tasks may affect downstream performance.
 
