@@ -1,6 +1,8 @@
 # SelfHAR - Improving Human Activity Recognition through Self-training with Unlabeled Data
 
 ![SelfHAR Overview](./imgs/architecture_overview.png "SelfHAR Overview")
+<sub><sup>(Based on work of Tang, Chi Ian and Perez-Pozuelo, Ignacio and Spathis, Dimitris and Brage, Soren and Wareham, Nick and Mascolo, Cecilia)</sup></sub>
+
 
 Machine learning and deep learning have shown great promise in mobile sensing applications, including Human Activity Recognition. However, the performance of such models in real-world settings largely depends on the availability of large datasets that captures diverse behaviors. Recently, studies in computer vision and natural language processing have shown that leveraging massive amounts of unlabeled data enables performance on par with state-of-the-art supervised models.
 
@@ -9,6 +11,8 @@ In this work, we present SelfHAR, a semi-supervised model that effectively learn
 More details can be found in our full paper published in IMWUT: https://doi.org/10.1145/3448112.
 
 This repository complements our paper, providing a reference implementation of the method as described in the paper. Please contact the authors for enquiries regarding the code.
+
+> Note: This repository is still under active development and breaking changes might be made in future commits and releases.
 
 # Citation
 
@@ -42,7 +46,6 @@ The main entry points of the repository are `run_self_har.py` and `run_datasets.
 `run_self_har.py` implements the training, fine-tuning and evaluation of HAR models following the SelfHAR and related pipelines. The training pipeline is controlled using a JSON configuration file passed via command line argument `--config`. Sample configuration files are included in the [sample_configs](./sample_configs/) folder, which include configurations for the SelfHAR, Transformation Discrimination Only, Self-Training Only and Fully-supervised pipelines. Please refer to the [README.md](./sample_configs/README.md) in the folder for creating a customised training pipeline.
 
 ## Demo: Training a model for MotionSense following the SelfHAR pipeline
-![SelfHAR Architecture](./imgs/architecture_self_har.png "SelfHAR Architecture")
 
 Please run the following commands to:
 1. Download the [MotionSense](https://github.com/mmalekzadeh/motion-sense) dataset and the [HHAR](http://archive.ics.uci.edu/ml/datasets/heterogeneity+activity+recognition) dataset, and
@@ -52,6 +55,7 @@ Please run the following commands to:
 python run_datasets.py --working_directory test_run --mode download_and_process --dataset all
 python run_self_har.py --working_directory test_run --config sample_configs/self_har.json --labelled_dataset_path test_run/processed_datasets/motionsense_processed.pkl --unlabelled_dataset_path test_run/processed_datasets/hhar_processed.pkl --window_size 400 --max_unlabelled_windows 40000
 ```
+![SelfHAR Architecture](./imgs/architecture_self_har.png "SelfHAR Architecture")
 
 # Results
 ![Low-Data Results](./imgs/low_data_results.png "Low-Data Results")
@@ -75,7 +79,14 @@ A brief description of each Python script is provided below:
 | `transformations.py` | Different functions for generating alternative views of sensor signals. |
 
 # License
-The current version of this repository is not released under any licenses, the authors retain their full rights. The authors accept no warranty or liability for the use of the repository.
+The current version of this repository is released under the GNU General Public License v3.0 unless otherwise stated. The author of the repository retains his respective rights. The published paper is governed by a separate license and the authors retain their respective rights.
+
+# Disclaimers
+Disclaimer of Warranty.
+THERE IS NO WARRANTY FOR THE PROGRAM, TO THE EXTENT PERMITTED BY APPLICABLE LAW.  EXCEPT WHEN OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR OTHER PARTIES PROVIDE THE PROGRAM "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.  THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE PROGRAM IS WITH YOU.  SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL NECESSARY SERVICING, REPAIR OR CORRECTION.
+
+Limitation of Liability.
+IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING WILL ANY COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MODIFIES AND/OR CONVEYS THE PROGRAM AS PERMITTED ABOVE, BE LIABLE TO YOU FOR DAMAGES, INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF THE USE OR INABILITY TO USE THE PROGRAM (INCLUDING BUT NOT LIMITED TO LOSS OF DATA OR DATA BEING RENDERED INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD PARTIES OR A FAILURE OF THE PROGRAM TO OPERATE WITH ANY OTHER PROGRAMS), EVEN IF SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
 
 # Other works used in this project
 This work made use of the MotionSense dataset available at https://github.com/mmalekzadeh/motion-sense, and the HHAR dataset available at http://archive.ics.uci.edu/ml/datasets/heterogeneity+activity+recognition.
