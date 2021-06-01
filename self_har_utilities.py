@@ -7,15 +7,23 @@ __copyright__ = "Copyright (C) 2021 C. I. Tang"
 
 """
 Complementing the work of Tang et al.: SelfHAR: Improving Human Activity Recognition through Self-training with Unlabeled Data
-@article{tang2021selfhar,
-  title={SelfHAR: Improving Human Activity Recognition through Self-training with Unlabeled Data},
-  author={Tang, Chi Ian and Perez-Pozuelo, Ignacio and Spathis, Dimitris and Brage, Soren and Wareham, Nick and Mascolo, Cecilia},
-  journal={Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies},
-  volume={5},
-  number={1},
-  pages={1--30},
-  year={2021},
-  publisher={ACM New York, NY, USA}
+@article{10.1145/3448112,
+  author = {Tang, Chi Ian and Perez-Pozuelo, Ignacio and Spathis, Dimitris and Brage, Soren and Wareham, Nick and Mascolo, Cecilia},
+  title = {SelfHAR: Improving Human Activity Recognition through Self-Training with Unlabeled Data},
+  year = {2021},
+  issue_date = {March 2021},
+  publisher = {Association for Computing Machinery},
+  address = {New York, NY, USA},
+  volume = {5},
+  number = {1},
+  url = {https://doi.org/10.1145/3448112},
+  doi = {10.1145/3448112},
+  abstract = {Machine learning and deep learning have shown great promise in mobile sensing applications, including Human Activity Recognition. However, the performance of such models in real-world settings largely depends on the availability of large datasets that captures diverse behaviors. Recently, studies in computer vision and natural language processing have shown that leveraging massive amounts of unlabeled data enables performance on par with state-of-the-art supervised models.In this work, we present SelfHAR, a semi-supervised model that effectively learns to leverage unlabeled mobile sensing datasets to complement small labeled datasets. Our approach combines teacher-student self-training, which distills the knowledge of unlabeled and labeled datasets while allowing for data augmentation, and multi-task self-supervision, which learns robust signal-level representations by predicting distorted versions of the input.We evaluated SelfHAR on various HAR datasets and showed state-of-the-art performance over supervised and previous semi-supervised approaches, with up to 12% increase in F1 score using the same number of model parameters at inference. Furthermore, SelfHAR is data-efficient, reaching similar performance using up to 10 times less labeled data compared to supervised approaches. Our work not only achieves state-of-the-art performance in a diverse set of HAR datasets, but also sheds light on how pre-training tasks may affect downstream performance.},
+  journal = {Proc. ACM Interact. Mob. Wearable Ubiquitous Technol.},
+  month = mar,
+  articleno = {36},
+  numpages = {30},
+  keywords = {semi-supervised training, human activity recognition, unlabeled data, self-supervised training, self-training, deep learning}
 }
 
 Access to Article:
