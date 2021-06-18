@@ -45,7 +45,8 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-def create_1d_conv_core_model(input_shape, model_name="base_model"):
+
+def create_1d_conv_core_model(input_shape, model_name="base_model", use_standard_max_pooling=False):
     """
     Create the base model for activity recognition
     Reference (TPN model):
@@ -91,7 +92,11 @@ def create_1d_conv_core_model(input_shape, model_name="base_model"):
         )(x)
     x = tf.keras.layers.Dropout(0.1)(x)
     
-    x = tf.keras.layers.GlobalMaxPool1D(data_format='channels_last', name='global_max_pooling1d')(x)
+    if use_standard_max_pooling:
+        x = tf.keras.layers.MaxPool1D(pool_size=x.shape[1], padding='valid', data_format='channels_last', name='max_pooling1d')(x)
+        x = tf.keras.layers.Reshape([x.shape[-1]], name='reshape_squeeze')(x)
+    else:
+        x = tf.keras.layers.GlobalMaxPool1D(data_format='channels_last', name='global_max_pooling1d')(x)
 
     return tf.keras.Model(inputs, x, name=model_name)
 
