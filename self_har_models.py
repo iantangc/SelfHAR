@@ -46,7 +46,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-def create_1d_conv_core_model(input_shape, model_name="base_model", use_2d_operations=False):
+def create_1d_conv_core_model(input_shape, model_name="base_model", use_2d_operations=False, quantization_friendly=False):
     """
     Create the base model for activity recognition
     Reference (TPN model):
@@ -72,7 +72,10 @@ def create_1d_conv_core_model(input_shape, model_name="base_model", use_2d_opera
     x = inputs
     if use_2d_operations:
         if len(input_shape) == 2:
-            x = tf.expand_dims(x, axis=2)
+            if quantization_friendly:
+                x = tf.keras.layers.Reshape(target_shape=(input_shape[0], 1, input_shape[1]))(x)
+            else:
+                x = tf.expand_dims(x, axis=2)
 
         x = tf.keras.layers.Conv2D(
             32, (24, 1),
@@ -97,7 +100,7 @@ def create_1d_conv_core_model(input_shape, model_name="base_model", use_2d_opera
 
         x = tf.keras.layers.MaxPool2D(pool_size=x.shape[1:3], padding='valid', data_format='channels_last', name='max_pooling')(x)
 
-        x = tf.squeeze(x, axis=[1,2])
+        x = tf.keras.layers.Flatten()(x)
     
     else:
         x = tf.keras.layers.Conv1D(

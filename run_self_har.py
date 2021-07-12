@@ -212,10 +212,7 @@ def get_config_default_value_if_none(experiment_config, entry, set_value=True):
     
     return default_value
 
-
-if __name__ == '__main__':
-    parser = get_parser()
-    args = parser.parse_args()
+def main(args):
 
     current_time_string = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
     working_directory = args.working_directory
@@ -562,3 +559,9 @@ if __name__ == '__main__':
         f.write(structured)
     if verbose > 0:
         print("Saved results summary to ", result_summary_path)
+
+if __name__ == '__main__':
+    
+    parser = get_parser()
+    args = parser.parse_args()
+    main(args)
