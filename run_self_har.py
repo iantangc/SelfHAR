@@ -98,6 +98,9 @@ def get_parser():
     parser.add_argument('--verbose', default=1, type=int,
                         help='verbosity level')
 
+    parser.add_argument('--experimental_use_2d_architecture', default=False, type=strtobool,
+                        help='Uses 2D architecture for the base model')
+
     return parser
 
 def prepare_dataset(dataset_path, window_size, get_train_test_users, validation_split_proportion=0.1, verbose=1):
@@ -332,7 +335,7 @@ if __name__ == '__main__':
             if previous_config is None or get_config_default_value_if_none(previous_config, 'trained_model_path', set_value=False) == '':
                 if verbose > 0:
                     print("Creating new model...")
-                core_model = self_har_models.create_1d_conv_core_model(input_shape)
+                core_model = self_har_models.create_1d_conv_core_model(input_shape, use_2d_operations=args.experimental_use_2d_architecture)
             else:
                 if verbose > 0:
                     print(f"Loading previous model {previous_config['trained_model_path']}")
@@ -382,7 +385,7 @@ if __name__ == '__main__':
             if previous_config is None or get_config_default_value_if_none(previous_config, 'trained_model_path', set_value=False) == '':
                 if verbose > 0:
                     print("Creating new model...")
-                core_model = self_har_models.create_1d_conv_core_model(input_shape)
+                core_model = self_har_models.create_1d_conv_core_model(input_shape, use_2d_operations=args.experimental_use_2d_architecture)
                 is_core_model = True
             else:
                 if verbose > 0:
@@ -474,7 +477,7 @@ if __name__ == '__main__':
             )
             
 
-            core_model = self_har_models.create_1d_conv_core_model(input_shape)
+            core_model = self_har_models.create_1d_conv_core_model(input_shape, use_2d_operations=args.experimental_use_2d_architecture)
             def training_rate_schedule(epoch):
                 rate = 0.0003 * (0.5 ** (epoch // 15))
                 if verbose > 0:

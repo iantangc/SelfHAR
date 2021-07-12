@@ -46,7 +46,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-def create_1d_conv_core_model(input_shape, model_name="base_model", use_standard_max_pooling=False):
+def create_1d_conv_core_model(input_shape, model_name="base_model", use_2d_operations=False):
     """
     Create the base model for activity recognition
     Reference (TPN model):
@@ -68,38 +68,62 @@ def create_1d_conv_core_model(input_shape, model_name="base_model", use_standard
     Returns:
         model (tf.keras.Model)
     """
-
     inputs = tf.keras.Input(shape=input_shape, name='input')
     x = inputs
-    x = tf.keras.layers.Conv1D(
-            32, 24,
+    if use_2d_operations:
+        if len(input_shape) == 2:
+            x = tf.expand_dims(x, axis=2)
+
+        x = tf.keras.layers.Conv2D(
+            32, (24, 1),
             activation='relu',
             kernel_regularizer=tf.keras.regularizers.l2(l=1e-4)
         )(x)
-    x = tf.keras.layers.Dropout(0.1)(x)
+        x = tf.keras.layers.Dropout(0.1)(x)
 
-    x = tf.keras.layers.Conv1D(
-            64, 16,
+        x = tf.keras.layers.Conv2D(
+                64, (16, 1),
+                activation='relu',
+                kernel_regularizer=tf.keras.regularizers.l2(l=1e-4),
+            )(x)
+        x = tf.keras.layers.Dropout(0.1)(x)
+        
+        x = tf.keras.layers.Conv2D(
+            96, (8, 1),
             activation='relu',
             kernel_regularizer=tf.keras.regularizers.l2(l=1e-4),
-        )(x)
-    x = tf.keras.layers.Dropout(0.1)(x)
+            )(x)
+        x = tf.keras.layers.Dropout(0.1)(x)
+
+        x = tf.keras.layers.MaxPool2D(pool_size=x.shape[1:3], padding='valid', data_format='channels_last', name='max_pooling')(x)
+
+        x = tf.squeeze(x, axis=[1,2])
     
-    x = tf.keras.layers.Conv1D(
-        96, 8,
-        activation='relu',
-        kernel_regularizer=tf.keras.regularizers.l2(l=1e-4),
-        )(x)
-    x = tf.keras.layers.Dropout(0.1)(x)
-    
-    if use_standard_max_pooling:
-        x = tf.keras.layers.MaxPool1D(pool_size=x.shape[1], padding='valid', data_format='channels_last', name='max_pooling1d')(x)
-        x = tf.keras.layers.Reshape([x.shape[-1]], name='reshape_squeeze')(x)
     else:
+        x = tf.keras.layers.Conv1D(
+                32, 24,
+                activation='relu',
+                kernel_regularizer=tf.keras.regularizers.l2(l=1e-4)
+            )(x)
+        x = tf.keras.layers.Dropout(0.1)(x)
+
+        x = tf.keras.layers.Conv1D(
+                64, 16,
+                activation='relu',
+                kernel_regularizer=tf.keras.regularizers.l2(l=1e-4),
+            )(x)
+        x = tf.keras.layers.Dropout(0.1)(x)
+        
+        x = tf.keras.layers.Conv1D(
+            96, 8,
+            activation='relu',
+            kernel_regularizer=tf.keras.regularizers.l2(l=1e-4),
+            )(x)
+        x = tf.keras.layers.Dropout(0.1)(x)
+        
         x = tf.keras.layers.GlobalMaxPool1D(data_format='channels_last', name='global_max_pooling1d')(x)
 
     return tf.keras.Model(inputs, x, name=model_name)
-
 
 def extract_core_model(composite_model):
     return composite_model.layers[1]
