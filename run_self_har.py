@@ -559,6 +559,7 @@ def main(args):
         f.write(structured)
     if verbose > 0:
         print("Saved results summary to ", result_summary_path)
+    return experiment_configs
 
 if __name__ == '__main__':
     
