@@ -1,0 +1,62 @@
+{  
+    "NOTICE": ["Copyright (C) 2021 C. I. Tang",
+        "This program is free software: you can redistribute it and/or modify",
+        "it under the terms of the GNU General Public License as published by",
+        "the Free Software Foundation, either version 3 of the License, or",
+        "(at your option) any later version.",
+        "This program is distributed in the hope that it will be useful,",
+        "but WITHOUT ANY WARRANTY; without even the implied warranty of",
+        "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the",
+        "GNU General Public License for more details.",
+        "You should have received a copy of the GNU General Public License",
+        "along with this program. If not, see <https://www.gnu.org/licenses/>."
+    ],
+    "tag": "Self_HAR",
+    "experiment_configs": [
+        {
+            "type": "har_full_train",
+            "tag": "Teacher_Train",
+            "previous_config_offset": 0,
+            "optimizer": "adam",
+            "initial_learning_rate": 0.0003,
+            "epochs": 30,
+            "batch_size": 300
+        },
+        {
+            "type": "self_har",
+            "tag": "Self_HAR_Pre_Train",
+            "previous_config_offset": 1,
+            "optimizer": "adam",
+            "initial_learning_rate": 0.0003,
+            "epochs": 30,
+            "batch_size": 300,
+            "self_training_samples_per_class": 10000,
+            "self_training_minimum_confidence": 0.5,
+            "self_training_plurality_only": true
+        },
+        {
+            "type": "har_full_fine_tune",
+            "tag": "Student_Fine_Tune",
+            "previous_config_offset": 1,
+            "optimizer": "adam",
+            "initial_learning_rate": 0.0003,
+            "epochs": 30,
+            "batch_size": 300,
+            "eval_har": true
+        },
+        {
+            "type": "convert_to_tflite",
+            "tag": "Linear_Eval_Lite",
+            "previous_config_offset": 1,
+            "quantize_option": "default",
+            "eval_har": true
+        },
+        {
+            "type": "convert_to_tflite",
+            "tag": "Linear_Eval_Lite",
+            "previous_config_offset": 2,
+            "quantize_option": "float16",
+            "eval_har": true
+        }
+    ]
+}

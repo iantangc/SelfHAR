@@ -205,6 +205,8 @@ def get_config_default_value_if_none(experiment_config, entry, set_value=True):
         default_value = {}
     elif entry == 'eval_har':
         default_value = False
+    elif entry == 'quantize_option':
+        default_value = 'none'
 
     if set_value:
         experiment_config[entry] = default_value
@@ -528,19 +530,55 @@ def main(args):
                 experiment_config['trained_model_type'] = 'har_model'
             else:
                 experiment_config['trained_model_type'] = 'transform_with_har_model'
+        
+        if experiment_type == 'convert_to_tflite':
+            if previous_config is None or get_config_default_value_if_none(previous_config, 'trained_model_path', set_value=False) == '':
+                print("ERROR No previous model for self-training")
+                break
+            else:
+                if verbose > 0:
+                    print(f"Loading previous model {previous_config['trained_model_path']}")
+                previous_model = tf.keras.models.load_model(previous_config['trained_model_path'])
+            
+            quantize_option = get_config_default_value_if_none(experiment_config, 'quantize_option', set_value=True)
+            converter = tf.lite.TFLiteConverter.from_keras_model(previous_model)
+            if quantize_option == 'none':
+                pass
+            elif quantize_option == 'default' or quantize_option == 'float8':
+                converter.optimizations = [tf.lite.Optimize.DEFAULT]
+            elif quantize_option == 'float16':
+                converter.optimizations = [tf.lite.Optimize.DEFAULT]
+                converter.target_spec.supported_types = [tf.float16]
+            tflite_model = converter.convert()
+
+            model_file_name = os.path.join(working_directory, "models", f"{tag}.tflite")
+            with open(model_file_name, 'wb') as f:
+                f.write(tflite_model)
+
+            experiment_config['trained_model_path'] = model_file_name
+            experiment_config['trained_model_type'] = previous_config['trained_model_type'] + '_tflite'
 
 
         if get_config_default_value_if_none(experiment_config, 'eval_har', set_value=False):
-            if get_config_default_value_if_none(experiment_config, 'trained_model_type') == 'har_model':
-                best_har_model = tf.keras.models.load_model(experiment_config['trained_model_path'])
-            elif get_config_default_value_if_none(experiment_config, 'trained_model_type') == 'transform_with_har_model':
-                previous_model = tf.keras.models.load_model(experiment_config['trained_model_path'])
-                best_har_model = self_har_models.extract_har_model(previous_model, optimizer=optimizer, model_name=tag)
+            if verbose > 0:
+                print("Attempting to run HAR Evaluation")
+            trained_model_type = get_config_default_value_if_none(experiment_config, 'trained_model_type')
+            if trained_model_type.endswith('_tflite'):
+                data = prepared_datasets['labelled']['test'][0].astype(np.float32)
+                labels = prepared_datasets['labelled']['test'][1]
+                labels_argmax = np.argmax(labels, axis=1)
+                eval_results = evaluate_tf_lite_model(experiment_config['trained_model_path'], data, labels_argmax)
             else:
-                continue
+                if trained_model_type == 'har_model':
+                    best_har_model = tf.keras.models.load_model(experiment_config['trained_model_path'])
+                elif trained_model_type == 'transform_with_har_model':
+                    previous_model = tf.keras.models.load_model(experiment_config['trained_model_path'])
+                    best_har_model = self_har_models.extract_har_model(previous_model, optimizer=optimizer, model_name=tag)
+                else:
+                    continue
 
-            pred = best_har_model.predict(prepared_datasets['labelled']['test'][0])
-            eval_results = self_har_utilities.evaluate_model_simple(pred, prepared_datasets['labelled']['test'][1])
+                pred = best_har_model.predict(prepared_datasets['labelled']['test'][0])
+                eval_results = self_har_utilities.evaluate_model_simple(pred, prepared_datasets['labelled']['test'][1])
             if verbose > 0:
                 print(eval_results)
             experiment_config['eval_results'] = eval_results
@@ -560,6 +598,36 @@ def main(args):
     if verbose > 0:
         print("Saved results summary to ", result_summary_path)
     return experiment_configs
+
+def evaluate_tf_lite_model(model_path, data, labels):
+    interpreter = tf.lite.Interpreter(model_path=model_path)
+    interpreter.allocate_tensors()
+
+    input_index = interpreter.get_input_details()[0]["index"]
+    output_index = interpreter.get_output_details()[0]["index"]
+
+    prediction_logits = []
+    prediction_classes = []
+    for i in range(len(data)):
+        X = data[[i]]
+
+        interpreter.set_tensor(input_index, X)
+        interpreter.invoke()
+        output = interpreter.get_tensor(output_index)
+        prediction_logits.append(output)
+        prediction_class = np.argmax(output[0])
+        prediction_classes.append(prediction_class)
+        if i % 100 == 0 and i != 0:
+            print(f"{i}/{len(data)} - {i/len(data):.1%}")
+            # break
+    
+    prediction_logits = np.array(prediction_logits)
+    prediction_classes = np.array(prediction_classes)
+
+    # print(prediction_classes.shape, labels.shape)
+
+    return self_har_utilities.evaluate_model_simple(prediction_classes, labels[:len(prediction_classes)], is_one_hot=False)
+    
 
 if __name__ == '__main__':
     
