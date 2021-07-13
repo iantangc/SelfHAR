@@ -46,17 +46,24 @@
         },
         {
             "type": "convert_to_tflite",
-            "tag": "Student_Lite_Default",
+            "tag": "Student_Lite_Original",
             "previous_config_offset": 1,
+            "quantize_option": "none",
+            "eval_har": true
+        },
+        {
+            "type": "convert_to_tflite",
+            "tag": "Student_Lite_Default",
+            "previous_config_offset": 2,
             "quantize_option": "default",
-            "eval_har": false
+            "eval_har": true
         },
         {
             "type": "convert_to_tflite",
             "tag": "Student_Lite_Float16",
-            "previous_config_offset": 2,
+            "previous_config_offset": 3,
             "quantize_option": "float16",
-            "eval_har": false
+            "eval_har": true
         }
     ]
 }
