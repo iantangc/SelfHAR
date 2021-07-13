@@ -56,7 +56,7 @@
             "tag": "Student_Lite_Float16",
             "previous_config_offset": 2,
             "quantize_option": "float16",
-            "eval_har": true
+            "eval_har": false
         }
     ]
 }
