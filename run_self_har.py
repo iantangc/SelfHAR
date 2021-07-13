@@ -630,7 +630,6 @@ def evaluate_tf_lite_model(model_path, data, labels):
     
 
 if __name__ == '__main__':
-    
     parser = get_parser()
     args = parser.parse_args()
     main(args)

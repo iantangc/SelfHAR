@@ -121,6 +121,9 @@ PROCESSED_DATASET_SUB_DIRECTORY = 'processed_datasets'
 
 
 def get_parser():
+    def strtobool(v):
+        return bool(distutils.util.strtobool(v))
+
     parser = argparse.ArgumentParser(
         description='SelfHAR datasets download and processing script')
     parser.add_argument('--working_directory', default='run',
@@ -133,10 +136,12 @@ def get_parser():
                         help='name of the dataset to be downloaded/processed')
     parser.add_argument('--dataset_file_path', default=None, 
                         help='the path to the downloaded dataset for processing. Default download path is used when None.')
+    
+    parser.add_argument('--agree_all', default=False, type=strtobool,
+                        help='agree to all conditions while downloading the datasets, and skip command line interactions (Support Non-CLI interfaces)')
     return parser
 
-
-def download_dataset(data_directory, dataset_metadata):
+def download_dataset(data_directory, dataset_metadata, agree_to_condition=False):
     message = f"""You are going to download the '{dataset_metadata['name']}' dataset.
     Please verify that you have visited the homepage of the dataset
     (link: {dataset_metadata['dataset_home_page']} . Note: this link is not necessarily up-to-date or accurate),
@@ -147,8 +152,14 @@ def download_dataset(data_directory, dataset_metadata):
     Please enter 'y' to agree to the terms above, in addition to any other terms previously set out.
     """
     # answer = distutils.util.strtobool(input(message))
-    answer = input(message)
-    if answer == 'y':
+    if not agree_to_condition:
+        answer = input(message)
+        agree_to_condition = answer == 'y'
+    else:
+        print(message)
+        print("You have agreed to the terms.")
+
+    if agree_to_condition:
         dataset_name = dataset_metadata['name']
         dataset_url = dataset_metadata['source_url']
         file_name = dataset_metadata['file_name']
@@ -168,7 +179,6 @@ def process_dataset(data_directory, processed_dataset_directory, dataset_metadat
     dataset_name = dataset_metadata['name']
     file_name = dataset_metadata['file_name']
     
-
     print("Unzipping dataset...")
     dataset_file_path = args.dataset_file_path
     if dataset_file_path is None:
@@ -194,11 +204,7 @@ def process_dataset(data_directory, processed_dataset_directory, dataset_metadat
         pickle.dump(dataset_content, f)
     print(f"Finshed Processing, saved to {os.path.join(processed_dataset_directory, dataset_metadata['save_file_name'])}.")
     
-
-if __name__ == '__main__':
-    parser = get_parser()
-    args = parser.parse_args()
-
+def main(args):
     if not os.path.exists(args.working_directory):
         os.mkdir(args.working_directory)
     dataset_directory = os.path.join(args.working_directory, ORIGINAL_DATASET_SUB_DIRECTORY)
@@ -217,9 +223,8 @@ if __name__ == '__main__':
 
         for dataset in datasets:
             print(f"-------- Downloading {dataset} --------")
-            download_dataset(dataset_directory, DATASET_METADATA[dataset])
+            download_dataset(dataset_directory, DATASET_METADATA[dataset], agree_to_condition=args.agree_all)
     
-
     if args.mode == 'download_and_process' or args.mode == 'process':
         if args.dataset == 'all':
             datasets= list(DATASET_METADATA.keys())
@@ -230,6 +235,8 @@ if __name__ == '__main__':
             print(f"-------- Processing {dataset} --------")
             process_dataset(dataset_directory, processed_dataset_directory, DATASET_METADATA[dataset], args.dataset_file_path)
     print("Finished")
-        
-        
 
+if __name__ == '__main__':
+    parser = get_parser()
+    args = parser.parse_args()
+    main(args)

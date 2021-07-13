@@ -46,14 +46,14 @@
         },
         {
             "type": "convert_to_tflite",
-            "tag": "Linear_Eval_Lite",
+            "tag": "Student_Lite_Default",
             "previous_config_offset": 1,
             "quantize_option": "default",
-            "eval_har": true
+            "eval_har": false
         },
         {
             "type": "convert_to_tflite",
-            "tag": "Linear_Eval_Lite",
+            "tag": "Student_Lite_Float16",
             "previous_config_offset": 2,
             "quantize_option": "float16",
             "eval_har": true
